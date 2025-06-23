@@ -28,7 +28,12 @@ def summarize_text(text):
 def answer_question(doc_text, question):
     input_text = doc_text[:1000]
     result = qna(question=question, context=input_text)
-    return result['answer']
+    answer = result['answer']
+    start = result['start']
+    end = result['end']
+    snippet = input_text[start:end+1]
+    return answer, snippet
+
 
 def generate_questions(doc_text):
     prompt = (
@@ -61,9 +66,12 @@ if uploaded_file:
         question = st.text_input("Ask a question based on the document:")
         if question:
             with st.spinner("Thinking..."):
-                answer = answer_question(doc_text, question)
-            st.markdown("**Answer:**")
-            st.write(answer)
+                answer, snippet = answer_question(doc_text, question)
+                st.markdown("**Answer:**")
+                st.write(answer)
+                st.markdown("**Supporting Snippet:**")
+                st.code(snippet)
+
 
     elif mode == "Challenge Me":
         st.write("Generating logic-based questions...")
